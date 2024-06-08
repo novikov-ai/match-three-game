@@ -4,7 +4,7 @@ Match-three is a popular puzzle game where players swap and match tiles to creat
 
 In that console game players must use their skills to clear the board by matching elements in rows or columns. The goal is to remove as many elements as possible within a given time. 
 
-### How two play
+### How to play
 
 - After the game started you have to provide coords of an adjacment tiles to replace. The replacement will take place only if afterwards there is a match with at least 3 elements in a row or column.
 - After match is ocuried the similar in a chain will be eliminated (if you are lucky enough, sometime you will get a bonuses after elimination).
