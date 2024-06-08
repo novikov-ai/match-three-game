@@ -10,9 +10,9 @@ In that console game players must use their skills to clear the board by matchin
 - After match is ocuried the similar in a chain will be eliminated (if you are lucky enough, sometime you will get a bonuses after elimination).
 - The game will end, if it is nothing to replace or time is up.
 - You can restart or quit at any time you want, just press the command:
-  - $-p (for pause and displaying statistics)
-  - $-q (for quiting the game and displaying statistics)
-  - $-r (for restarting)
+  - `-p` (for pause and displaying statistics)
+  - `-q` (for quiting the game and displaying statistics)
+  - `-r` (for restarting)
 
 ### Entities
 
