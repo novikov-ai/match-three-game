@@ -2,15 +2,15 @@
 
 ### Этап 1 - Определяем классы по кластерам (предварительно)
 
-![pic](Classes.png)
+![pic](Content/Classes.png)
 
 ### Этап 2 - Примеряем Event Storming на систему, чтобы нарисовать модель взаимодействия
 
-![pic](EventStorming.png)
+![pic](Content/EventStorming.png)
 
 ### Этап 3 - Финализируем кластера
 
-![pic](Clustered.png)
+![pic](Content/Clustered.png)
 
 Получились следующие кластеры из множества классов:
 1. Tiles Generator (Состав классов: TilesFactory, Tile, TilesQueue)
