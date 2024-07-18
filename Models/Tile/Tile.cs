@@ -1,10 +1,17 @@
-namespace Models.Tile
+namespace Models
 {
     public class Tile : Any
     {
         /// <summary>
         /// Компонент игровой доски
         /// </summary>
+
+        public char Type { get; set; }
+
+        public Tile(char type)
+        {
+            Type = type;
+        }
     }
 
     public abstract class Queue : Any

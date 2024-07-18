@@ -1,4 +1,4 @@
-namespace Models.Player
+namespace Models
 {
     /// <summary>
     /// Реализует логику хода игрока

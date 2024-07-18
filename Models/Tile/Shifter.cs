@@ -1,4 +1,4 @@
-namespace Models.Tile
+namespace Models
 {
     public abstract class Shifter : Any
     {

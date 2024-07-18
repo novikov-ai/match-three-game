@@ -1,4 +1,4 @@
-namespace Models.Board
+namespace Models
 {
     public abstract class Manager : Any
     {

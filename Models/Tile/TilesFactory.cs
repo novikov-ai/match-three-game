@@ -1,4 +1,4 @@
-namespace Models.Tile
+namespace Models
 {
     public static class TileFactory
     {
@@ -6,9 +6,9 @@ namespace Models.Tile
         /// Создает новый объект Tile
         /// </summary>
         /// <returns>Новый объект Tile</returns>
-        public static Tile CreateTile()
+        public static Tile CreateTile(char value)
         {
-            return new Tile();
+            return new Tile(value);
         }
     }
 }

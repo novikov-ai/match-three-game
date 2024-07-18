@@ -1,11 +1,14 @@
-namespace Models.Statistics;
+namespace Models;
 
-public abstract class Statistics : IDisplaying
+public class Statistics
 {
     private readonly IDisplaying _displaying;
 
-    public Statistics(IDisplaying displaying)
+    private readonly Player _player;
+
+    public Statistics(Player player, IDisplaying displaying)
     {
+        _player = player;
         _displaying = displaying;
     }
 
@@ -16,11 +19,20 @@ public abstract class Statistics : IDisplaying
     /// <postcondition>Статистика выведена в консоль</postcondtion>
     public void Display()
     {
-        _displaying.Display();
+        _displaying.Display(_player);
     }
 }
 
 public interface IDisplaying
 {
-    public void Display();
+    public void Display(Player player);
+}
+
+public class SimpleDisplay : IDisplaying
+{
+    public void Display(Player player)
+    {
+        Console.WriteLine($"Score: {player.Score}");
+        Console.WriteLine($"Moves: {player.Moves}");
+    }
 }
