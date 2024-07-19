@@ -1,4 +1,4 @@
-namespace CliManager
+namespace CLI
 {
     /// <summary>
     /// Функция для парсинга ввода пользователя, например, "A1" в (0, 0)
@@ -28,8 +28,8 @@ namespace CliManager
             }
 
             var position = new Position();
-            position.Column = column - 'A';
-            position.Row = row;
+            position.Y = column - 'A';
+            position.X = row;
 
             return position;
         }
@@ -37,24 +37,26 @@ namespace CliManager
 
     public class Position
     {
-        public int Column
+        private int _x;
+        private int _y;
+        public int Y
         {
-            get => this.Column;
+            get => _y;
 
             set
             {
                 _default = false;
-                this.Column = value;
+                _y = value;
             }
         }
-        public int Row
+        public int X
         {
-            get => this.Row;
+            get => _x;
 
             set
             {
                 _default = false;
-                this.Row = value;
+                _x = value;
             }
         }
 

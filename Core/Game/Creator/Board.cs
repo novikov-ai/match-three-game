@@ -1,4 +1,4 @@
-namespace Models
+namespace Core
 {
     /// <summary>
     /// Игровая дока с фиксированным размером N x M 
@@ -60,8 +60,8 @@ namespace Models
                 tiles[pos1.Item1, pos1.Item2] = tiles[pos2.Item1, pos2.Item2];
                 tiles[pos2.Item1, pos2.Item2] = temp;
 
-                // Check for matches
-                if (CheckForMatches())
+                var matchedTiles = CheckForMatches();
+                if (matchedTiles.Count > 0)
                 {
                     RemoveMatches();
                     DropTiles();
@@ -78,15 +78,20 @@ namespace Models
             return false;
         }
 
-        private bool CheckForMatches()
+        private List<Tile> CheckForMatches()
         {
-            // Simplified match checking for MVP (to be expanded)
+            var matched = new List<Tile>();
+
             for (int i = 0; i < size; i++)
             {
                 for (int j = 0; j < size - 2; j++)
                 {
                     if (tiles[i, j].Type == tiles[i, j + 1].Type && tiles[i, j + 1].Type == tiles[i, j + 2].Type)
-                        return true;
+                    {
+                        matched.Append(tiles[i, j]);
+                        matched.Append(tiles[i, j + 1]);
+                        matched.Append(tiles[i, j + 2]);
+                    }
                 }
             }
 
@@ -95,16 +100,19 @@ namespace Models
                 for (int i = 0; i < size - 2; i++)
                 {
                     if (tiles[i, j].Type == tiles[i + 1, j].Type && tiles[i + 1, j].Type == tiles[i + 2, j].Type)
-                        return true;
+                    {
+                        matched.Append(tiles[i, j]);
+                        matched.Append(tiles[i + 1, j]);
+                        matched.Append(tiles[i + 2, j]);
+                    }
                 }
             }
 
-            return false;
+            return matched;
         }
 
         private void RemoveMatches()
         {
-            // Simplified match removal for MVP (to be expanded)
             for (int i = 0; i < size; i++)
             {
                 for (int j = 0; j < size - 2; j++)

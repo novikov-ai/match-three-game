@@ -1,4 +1,4 @@
-namespace Models.Game
+namespace Core.Game
 {
     /// <summary>
     /// Реализует логику наблюдение за игрой

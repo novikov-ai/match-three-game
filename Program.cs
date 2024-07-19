@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
-using Models;
-using CliManager;
+using Core;
+using CLI;
 
 namespace Match3Game
 {
@@ -24,7 +24,7 @@ namespace Match3Game
                 Console.ForegroundColor = ConsoleColor.Gray;
                 Console.WriteLine("Enter move (e.g., A1) or use arrow keys to swap tiles. Commands: -p (pause), -q (quit), -r (restart)");
                 Console.ForegroundColor = ConsoleColor.Green;
-                
+
                 var input = Console.ReadLine();
 
                 if (input == "-p")
@@ -45,12 +45,7 @@ namespace Match3Game
                 }
                 else
                 {
-                    // Console.ReadLine();
-                    // Parse input and process arrow keys
-                    var parsedPosition = CliManager.Parser.ParsePosition(input);
-                    //     input = Console.ReadLine();
-                    // }
-                    // todo: validation
+                    var parsedPosition = CLI.Parser.ParsePosition(input);
 
                     if (parsedPosition.IsDefault())
                     {
@@ -62,68 +57,56 @@ Invalid format. Use format like 'A1'
                         continue;
                     }
 
-                    Console.WriteLine("PARSED: ", parsedPosition.Column, parsedPosition.Row);
+                    Arrow direction;
+                    string directionValue = "not specified";
+                    var dx = parsedPosition.X;
+                    var dy = parsedPosition.Y;
 
-                    var arrowKey = Console.ReadKey(true).Key; // Read the actual arrow key
-                    // var arrowKey = Console.ReadKey().Key; // Read the actual arrow key
+                    var arrowKey = Console.ReadKey(true).Key;
                     switch (arrowKey)
                     {
                         case ConsoleKey.UpArrow:
-                            // Handle up arrow key
+                            direction = Arrow.Up;
+                            dy += 1;
+                            directionValue = "UP";
                             break;
                         case ConsoleKey.DownArrow:
-                            // Handle down arrow key
+                            direction = Arrow.Down;
+                            dy -= 1;
+                            directionValue = "DOWN";
                             break;
                         case ConsoleKey.LeftArrow:
-                            // Handle left arrow key
+                            direction = Arrow.Left;
+                            dx -= 1;
+                            directionValue = "LEFT";
                             break;
                         case ConsoleKey.RightArrow:
-                            // Handle right arrow key
+                            direction = Arrow.Right;
+                            dx += 1;
+                            directionValue = "RIGHT";
                             break;
                         default:
-                            // Handle other keys if needed
+                            // Default behaviour
+                            direction = Arrow.Right;
+                            dx += 1;
+                            directionValue = "RIGHT";
                             break;
                     }
 
-                    // WORKS, BUT VS CODE DEBUG NOT
-                    System.Console.WriteLine(arrowKey + "!!!!!");
+                    var move = new Move(parsedPosition, direction);
 
-                    // ConsoleKeyInfo keyInfo; // Remove initialization, as it will be assigned inside the loop
-                    // do
-                    // {
-                    //     keyInfo = Console.ReadKey(true); // Capture key press
-                    // } while (keyInfo.Key != ConsoleKey.UpArrow && keyInfo.Key != ConsoleKey.DownArrow &&
-                    //          keyInfo.Key != ConsoleKey.LeftArrow && keyInfo.Key != ConsoleKey.RightArrow);
-                    // // Perform tile swap based on arrow keys
-                    // int dx = 0, dy = 0;
-                    // switch (keyInfo.Key)
-                    // {
-                    //     case ConsoleKey.UpArrow:
-                    //         dx = -1;
-                    //         break;
-                    //     case ConsoleKey.DownArrow:
-                    //         dx = 1;
-                    //         break;
-                    //     case ConsoleKey.LeftArrow:
-                    //         dy = -1;
-                    //         break;
-                    //     case ConsoleKey.RightArrow:
-                    //         dy = 1;
-                    //         break;
-                    // }
+                    if (board.SwapTiles((move.Position.X, move.Position.Y), (dx, dy)))
+                    {
+                        player.IncrementMoves();
+                        player.IncrementScore(10); // Simplified scoring for MVP
+                    }
+                    else
+                    {
+                         System.Console.WriteLine($@"{DateTime.Now}: {input} + { directionValue}
+Invalid move. Try again.");
+                        continue;
+                    }
 
-                    // Perform the swap and check for matches
-                    // if (board.SwapTiles(position.Item1, position.Item2, dx, dy))
-                    // {
-                    //     player.IncrementMoves();
-                    //     player.IncrementScore(10); // Simplified scoring for MVP
-                    // }
-                    // else
-                    // {
-                    //     Console.WriteLine("Invalid move. Try again.");
-                    // }
-
-                    // Check for available moves
                     if (!board.IsMoveAvailable())
                     {
                         Console.WriteLine("No more moves available. Game over.");
