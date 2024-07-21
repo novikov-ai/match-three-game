@@ -32,7 +32,9 @@ public class SimpleDisplay : IDisplaying
 {
     public void Display(Player player)
     {
-        Console.WriteLine($"Score: {player.Score}");
-        Console.WriteLine($"Moves: {player.Moves}");
+        Console.WriteLine(new string('-', 10));
+        Console.WriteLine($" Score: {player.Score}");
+        Console.WriteLine($" Moves: {player.Moves}");
+        Console.WriteLine(new string('-', 10));
     }
 }

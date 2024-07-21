@@ -22,14 +22,17 @@ namespace CLI
                 return new Position();
             }
 
+            // В консоли у нас шкала начинается с 1
+            row -= 1;
+
             if (column < 'A' || column > 'H' || row < 0 || row >= 8)
             {
                 return new Position();
             }
 
             var position = new Position();
-            position.Y = column - 'A';
-            position.X = row;
+            position.X = column - 'A';
+            position.Y = row;
 
             return position;
         }
@@ -37,6 +40,15 @@ namespace CLI
 
     public class Position
     {
+        public Position()
+        {
+        }
+        public Position(int x, int y)
+        {
+            _x = x;
+            _y = y;
+            _default = false;
+        }
         private int _x;
         private int _y;
         public int Y

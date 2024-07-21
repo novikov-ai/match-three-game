@@ -1,16 +1,26 @@
+using CLI;
+
 namespace Core
 {
-    public class Tile : Any
+    public class Tile : Any, IEquatable<Tile>
     {
         /// <summary>
         /// Компонент игровой доски
         /// </summary>
 
-        public char Type { get; set; }
-
-        public Tile(char type)
+        public string Type { get; set; }
+        // public Position Position { get; set; }
+        public Tile(string type)
         {
             Type = type;
+        }
+
+        public bool Equals(Tile other)
+        {
+            if (other == null)
+                return false;
+
+            return this.Type == other.Type;
         }
     }
 

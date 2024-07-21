@@ -1,14 +1,18 @@
 namespace Core
 {
-    public static class TileFactory
+    public class TileFactory
     {
+        private Random random = new Random();
+
+        private readonly string[] _tileTypes = { "🍏", "🍎", "🍊","🍌", "🍇", "🍒", "🥝", "🍑" };
+
         /// <summary>
         /// Создает новый объект Tile
         /// </summary>
         /// <returns>Новый объект Tile</returns>
-        public static Tile CreateTile(char value)
+        public Tile Create()
         {
-            return new Tile(value);
+            return new Tile(_tileTypes[random.Next(_tileTypes.Length)]);
         }
     }
 }

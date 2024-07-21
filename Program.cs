@@ -9,15 +9,14 @@ namespace Match3Game
     {
         static void Main(string[] args)
         {
-            var player = new Player();
-            var board = new Board();
+            var board = new Board(new TileFactory(), new Core.Game.GameWatcher());
+            var player = new Player(new TilesShifter(board), board);
             var dashboard = new Statistics(player, new SimpleDisplay());
 
             bool running = true;
 
             while (running)
             {
-                // Console.Clear();
                 board.Display();
                 dashboard.Display();
 
@@ -27,91 +26,46 @@ namespace Match3Game
 
                 var input = Console.ReadLine();
 
-                if (input == "-p")
+                switch (input)
                 {
-                    Console.WriteLine("Game paused. Press any key to continue...");
-                    Console.ReadKey();
-                }
-                else if (input == "-q")
-                {
-                    running = false;
-                    Console.WriteLine("Game over.");
-                }
-                else if (input == "-r")
-                {
-                    board = new Board();
-                    player = new Player();
-                    dashboard = new Statistics(player, new SimpleDisplay());
-                }
-                else
-                {
-                    var parsedPosition = CLI.Parser.ParsePosition(input);
+                    case "-p":
+                        {
+                            Console.WriteLine("Game paused. Press any key to continue...");
+                            Console.ReadKey();
+                            break;
+                        }
+                    case "-q":
+                        {
+                            running = false;
+                            Console.WriteLine("Game over.");
+                            break;
+                        }
+                    case "-r":
+                        {
+                            board = new Board(new TileFactory(), new Core.Game.GameWatcher());
+                            player = new Player(new TilesShifter(board), board);
+                            dashboard = new Statistics(player, new SimpleDisplay());
+                            break;
+                        }
+                    default:
+                        {
+                            var parsedPosition = CLI.Parser.ParsePosition(input);
 
-                    if (parsedPosition.IsDefault())
-                    {
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        System.Console.WriteLine($@"{DateTime.Now}: {input}
+                            if (parsedPosition.IsDefault())
+                            {
+                                Console.ForegroundColor = ConsoleColor.Yellow;
+                                System.Console.WriteLine($@"{DateTime.Now}: {input}
 Invalid format. Use format like 'A1'
 
 ");
-                        continue;
-                    }
+                                continue;
+                            }
 
-                    Arrow direction;
-                    string directionValue = "not specified";
-                    var dx = parsedPosition.X;
-                    var dy = parsedPosition.Y;
+                            var arrowKey = Console.ReadKey(true).Key;
 
-                    var arrowKey = Console.ReadKey(true).Key;
-                    switch (arrowKey)
-                    {
-                        case ConsoleKey.UpArrow:
-                            direction = Arrow.Up;
-                            dy += 1;
-                            directionValue = "UP";
+                            player.Move(board.Tiles, parsedPosition, arrowKey);
                             break;
-                        case ConsoleKey.DownArrow:
-                            direction = Arrow.Down;
-                            dy -= 1;
-                            directionValue = "DOWN";
-                            break;
-                        case ConsoleKey.LeftArrow:
-                            direction = Arrow.Left;
-                            dx -= 1;
-                            directionValue = "LEFT";
-                            break;
-                        case ConsoleKey.RightArrow:
-                            direction = Arrow.Right;
-                            dx += 1;
-                            directionValue = "RIGHT";
-                            break;
-                        default:
-                            // Default behaviour
-                            direction = Arrow.Right;
-                            dx += 1;
-                            directionValue = "RIGHT";
-                            break;
-                    }
-
-                    var move = new Move(parsedPosition, direction);
-
-                    if (board.SwapTiles((move.Position.X, move.Position.Y), (dx, dy)))
-                    {
-                        player.IncrementMoves();
-                        player.IncrementScore(10); // Simplified scoring for MVP
-                    }
-                    else
-                    {
-                         System.Console.WriteLine($@"{DateTime.Now}: {input} + { directionValue}
-Invalid move. Try again.");
-                        continue;
-                    }
-
-                    if (!board.IsMoveAvailable())
-                    {
-                        Console.WriteLine("No more moves available. Game over.");
-                        running = false;
-                    }
+                        }
                 }
             }
         }

@@ -1,3 +1,6 @@
+using CLI;
+using Core.Game;
+
 namespace Core
 {
     /// <summary>
@@ -6,188 +9,80 @@ namespace Core
     public class Board : Any
     {
         private Tile[,] tiles;
-        private Random random = new Random();
+        private readonly TileFactory _tileFactory;
         private const int size = 8;
-        private readonly char[] tileTypes = { 'A', 'B', 'C', 'D', 'E' };
 
-        public Board()
+        public Tile[,] Tiles { get { return tiles; } }
+
+        private GameWatcher _watcher;
+
+        public Board(TileFactory tileFactory, GameWatcher watcher)
         {
-            tiles = new Tile[size, size];
+            _tileFactory = tileFactory;
+            _watcher = watcher;
+
             GenerateNewBoard();
+        }
+
+        public List<TileSet> FindSets()
+        {
+            return _watcher.FindSets(tiles);
         }
 
         private void GenerateNewBoard()
         {
+            tiles = new Tile[size, size];
+
             for (int i = 0; i < size; i++)
             {
                 for (int j = 0; j < size; j++)
                 {
-                    tiles[i, j] = new Tile(tileTypes[random.Next(tileTypes.Length)]);
+                    tiles[i, j] = _tileFactory.Create();
                 }
             }
+
+            bool hasMatch = true;
+            do
+            {
+                var matched = FindSets();
+                hasMatch = matched.Count > 0;
+                if (hasMatch)
+                {
+                    foreach (var matchedSet in matched)
+                    {
+                        foreach (var tile in matchedSet.GetTiles())
+                        {
+                            tiles[tile.Item2.X, tile.Item2.Y] = _tileFactory.Create();
+                        }
+                    }
+                }
+            } while (hasMatch);
         }
 
         public void Display()
         {
-            Console.ForegroundColor = ConsoleColor.DarkMagenta;
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
             Console.WriteLine("  A B C D E F G H");
-            System.Console.WriteLine("  " + new string('-', 15));
-            for (int i = 0; i < size; i++)
+            System.Console.WriteLine("  " + new string('=', 16));
+            for (int i = size - 1; i >= 0; i--)
             {
                 Console.ForegroundColor = ConsoleColor.DarkCyan;
                 Console.Write((i + 1) + "|");
                 Console.ForegroundColor = ConsoleColor.White;
                 for (int j = 0; j < size; j++)
                 {
-                    Console.Write(tiles[i, j].Type + " ");
+                    Console.Write(tiles[i, j].Type);
                 }
+                Console.ForegroundColor = ConsoleColor.DarkCyan;
+                Console.Write("|" + (i + 1));
                 Console.WriteLine();
             }
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            System.Console.WriteLine("  " + new string('=', 16));
+            Console.WriteLine("  A B C D E F G H");
             Console.ForegroundColor = ConsoleColor.DarkRed;
         }
 
-        private bool IsValidPosition(int x, int y)
-        {
-            return x >= 0 && x < size && y >= 0 && y < size;
-        }
-
-        public bool SwapTiles((int, int) pos1, (int, int) pos2)
-        {
-            if (IsValidPosition(pos1.Item1, pos1.Item2) && IsValidPosition(pos2.Item1, pos2.Item2))
-            {
-                // Swap the tiles
-                var temp = tiles[pos1.Item1, pos1.Item2];
-                tiles[pos1.Item1, pos1.Item2] = tiles[pos2.Item1, pos2.Item2];
-                tiles[pos2.Item1, pos2.Item2] = temp;
-
-                var matchedTiles = CheckForMatches();
-                if (matchedTiles.Count > 0)
-                {
-                    RemoveMatches();
-                    DropTiles();
-                    return true;
-                }
-                else
-                {
-                    // Swap back if no match found
-                    temp = tiles[pos1.Item1, pos1.Item2];
-                    tiles[pos1.Item1, pos1.Item2] = tiles[pos2.Item1, pos2.Item2];
-                    tiles[pos2.Item1, pos2.Item2] = temp;
-                }
-            }
-            return false;
-        }
-
-        private List<Tile> CheckForMatches()
-        {
-            var matched = new List<Tile>();
-
-            for (int i = 0; i < size; i++)
-            {
-                for (int j = 0; j < size - 2; j++)
-                {
-                    if (tiles[i, j].Type == tiles[i, j + 1].Type && tiles[i, j + 1].Type == tiles[i, j + 2].Type)
-                    {
-                        matched.Append(tiles[i, j]);
-                        matched.Append(tiles[i, j + 1]);
-                        matched.Append(tiles[i, j + 2]);
-                    }
-                }
-            }
-
-            for (int j = 0; j < size; j++)
-            {
-                for (int i = 0; i < size - 2; i++)
-                {
-                    if (tiles[i, j].Type == tiles[i + 1, j].Type && tiles[i + 1, j].Type == tiles[i + 2, j].Type)
-                    {
-                        matched.Append(tiles[i, j]);
-                        matched.Append(tiles[i + 1, j]);
-                        matched.Append(tiles[i + 2, j]);
-                    }
-                }
-            }
-
-            return matched;
-        }
-
-        private void RemoveMatches()
-        {
-            for (int i = 0; i < size; i++)
-            {
-                for (int j = 0; j < size - 2; j++)
-                {
-                    if (tiles[i, j].Type == tiles[i, j + 1].Type && tiles[i, j + 1].Type == tiles[i, j + 2].Type)
-                    {
-                        tiles[i, j] = null;
-                        tiles[i, j + 1] = null;
-                        tiles[i, j + 2] = null;
-                    }
-                }
-            }
-
-            for (int j = 0; j < size; j++)
-            {
-                for (int i = 0; i < size - 2; i++)
-                {
-                    if (tiles[i, j].Type == tiles[i + 1, j].Type && tiles[i + 1, j].Type == tiles[i + 2, j].Type)
-                    {
-                        tiles[i, j] = null;
-                        tiles[i + 1, j] = null;
-                        tiles[i + 2, j] = null;
-                    }
-                }
-            }
-        }
-
-        private void DropTiles()
-        {
-            for (int j = 0; j < size; j++)
-            {
-                int emptyCount = 0;
-                for (int i = size - 1; i >= 0; i--)
-                {
-                    if (tiles[i, j] == null)
-                    {
-                        emptyCount++;
-                    }
-                    else if (emptyCount > 0)
-                    {
-                        tiles[i + emptyCount, j] = tiles[i, j];
-                        tiles[i, j] = null;
-                    }
-                }
-
-                for (int i = 0; i < emptyCount; i++)
-                {
-                    tiles[i, j] = new Tile(tileTypes[random.Next(tileTypes.Length)]);
-                }
-            }
-        }
-
-        public bool IsMoveAvailable()
-        {
-            // Simplified check for available moves for MVP (to be expanded)
-            for (int i = 0; i < size; i++)
-            {
-                for (int j = 0; j < size - 1; j++)
-                {
-                    if (SwapTiles((i, j), (i, j + 1)) || SwapTiles((i, j + 1), (i, j)))
-                        return true;
-                }
-            }
-
-            for (int j = 0; j < size; j++)
-            {
-                for (int i = 0; i < size - 1; i++)
-                {
-                    if (SwapTiles((i, j), (i + 1, j)) || SwapTiles((i + 1, j), (i, j)))
-                        return true;
-                }
-            }
-
-            return false;
-        }
-
+        public int Size() => size;
     }
 }
